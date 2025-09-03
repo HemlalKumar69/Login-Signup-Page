@@ -1,25 +1,35 @@
 const express = require("express");
+const cors = require("cors");
+const AuthRouter = require("./Routes/AuthRouter");
+const ProductRouter = require("./Routes/ProductRouter");
+require("dotenv").config();
+require("./Models/db");
+
 const app = express();
-const bodyParser = require('body-parser');
-const cors = require('cors');
-const AuthRouter = require('./Routes/AuthRouter');
-const ProductRouter = require('./Routes/ProductRouter')
 
-require('dotenv').config();
-require('./Models/db')
 
-const PORT = process.env.PORT || 8000;
+app.use(express.json()); 
+
+
+const FRONTEND_URL = process.env.FRONTEND_URL || "*";
+app.use(
+  cors({
+    origin: FRONTEND_URL,
+    credentials: true,
+  })
+);
+
 
 app.get("/home", (req, res) => {
-    res.send("hi I am root");
+  res.send("hi I am root");
+});
 
-    });
 
-    app.use(bodyParser.json());
-    app.use(cors());
-    app.use('/auth', AuthRouter);
-    app.use('/products', ProductRouter);
+app.use("/auth", AuthRouter);
+app.use("/products", ProductRouter);
 
-    app.listen(PORT, () => {
-        console.log(`server is running on ${PORT}`)
-    });
+
+const PORT = process.env.PORT || 8000;
+app.listen(PORT, () => {
+  console.log(`server is running on port ${PORT}`);
+});
